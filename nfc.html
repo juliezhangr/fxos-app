@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<!--
+ This Source Code Form is subject to the terms of the Mozilla Public
+ License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ You can obtain one at http://mozilla.org/MPL/2.0/.
+-->
+<!--
+ Copyright © 2013, Deutsche Telekom, Inc.
+-->
+
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>
+        </title>
+        <link rel="stylesheet" href="jquery/jquery.mobile-1.4.0.min.css" />
+        <style>
+          [data-role=page]{height: 100% !important; position:relative !important;}
+          [data-role=footer]{bottom:0; position:absolute !important; top: auto !important; width:100%;} 
+        </style>
+        <script src="jquery/jquery-2.1.0.min.js">
+        </script>
+        <script src="jquery/jquery.mobile-1.4.0.min.js">
+        </script>
+        <script src="js/nfc.js">
+        </script>
+    </head>
+    <body>
+        <div data-role="page" id="page1">
+            <div data-theme="a" data-role="header">
+                <h3>
+                    NFC/Bluetooth Demo - Deutsche Telekom
+                </h3>
+            </div>
+            <div id="NFCTagReader" data-role="content">
+                <h2>NFC Tag Reader</h2>
+                <a data-role="button" data-transition="fade" href="#page1" id="startbutton">
+                    <span id="buttontext">Start Tag Discovery</span>
+                </a>
+                <ul data-role="listview" data-divider-theme="b" data-inset="true">
+                    <li data-role="list-divider" role="heading">
+                        Status
+                    </li>
+                    <li data-theme="c" style="height: 100%">
+                      <textarea id="area" placeholder="" style="width:100%; padding: 0; height: auto" rows="6" readonly="readonly" disabled="true"></textarea>
+                    </li>
+                </ul>
+                <ul data-role="listview" data-divider-theme="b" data-inset="true" id="taglist" style="display: none;">
+                    <li data-role="list-divider" role="heading">
+                        NdefMessage
+                    </li>
+                </ul>
+                &nbsp;
+                <ul data-role="listview" data-divider-theme="b" data-inset="true" id="actionlist" style="display: none;">
+                    <li data-role="list-divider" role="heading">
+                        Action
+                    </li>
+                </ul>
+            </div>
+
+            <!-- NFC Tag Writer div -->
+            <a data-role="button" data-transition="fade" href="#page1" id="startbutton">
+              <span id="make_read_only_button">Make NDEF Tag readonly</span>
+            </a>
+            <a id="nfc_tag_write_dialog" href="TagWriteDialog.html" data-rel="dialog" style="display:none">Open NDef Write dialog</a>
+            <div id="NFCTagWriter" data-role="collapsible-set">
+                <div data-role="collapsible"><h2>Tag Eraser</h2>
+                    <div id="nfc_empty_form_id">
+                        <label for="basic">Erase Tag</label>
+                        <button id="button_nfc_empty_id">Erase Tag</button>
+                    </div>
+                </div>
+
+                <div data-role="collapsible"><h2>Text Tag Writer</h2>
+                    <div id="nfc_text_form_id">
+                        <label for="basic">Text</label>
+                        <input class="text" value="Dummy text"/>
+                        <button id="button_nfc_text_id">Write Text Tag</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
