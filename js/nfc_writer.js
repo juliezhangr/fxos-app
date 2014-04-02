@@ -190,54 +190,9 @@ contactFormToNdefRecord: function(elementRef) {
   return record;
 },
 
-
-// NFC Message Posting:
-postTextFormtoNdef: function(elementRef) {
-  var records = new Array();
-  var record = this.textFormToNdefRecord(elementRef);
-  records.push(record);
-  nfcUI.postPendingMessage(records);
-},
-
-postSmartPosterUriFormtoNdef: function(elementRef) {
-  var records = new Array();
-  var record = this.smartPosterUriFormToNdefRecord(elementRef);
-  records.push(record);
-  nfcUI.postPendingMessage(records);
-},
-
 postUriFormtoNdef: function(elementRef) {
   var records = new Array();
   var record = this.urlFormToNdefRecord(elementRef, true);
-  records.push(record);
-  nfcUI.postPendingMessage(records);
-},
-
-postSmartPosterEmailFormtoNdef: function(elementRef) {
-  var records = new Array();
-  var record = this.smartPosterEmailFormToNdefRecord(elementRef);
-  records.push(record);
-  nfcUI.postPendingMessage(records);
-},
-
-postEmailFormtoNdef: function(elementRef) {
-  var records = new Array();
-  var record = this.emailFormToNdefRecord(elementRef);
-  records.push(record);
-  nfcUI.postPendingMessage(records);
-},
-
-postSmsFormtoNdef: function(elementRef) {
-  var records = new Array();
-  var record = this.smsFormToNdefRecord(elementRef);
-  records.push(record);
-  nfcUI.postPendingMessage(records);
-},
-
-postContactFormToNdef: function(elementRef) {
-  // postContactArrayTag will post a contact array as the payload.
-  var record = this.contactFormToNdefRecord(elementRef);
-  var records = new Array();
   records.push(record);
   nfcUI.postPendingMessage(records);
 },
