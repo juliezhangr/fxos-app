@@ -1,16 +1,17 @@
 {
-  "name": "NFC Demo",
-  "description": "NFC Demo",
-  "launch_path": "/nfc.html",
+  "name": "FXOS Demo",
+  "description": "Sample app to share app over nfc/bluetooth",
+  "launch_path": "/index.html",
   "type": "certified",
   "permissions": {
     "nfc":{ "access": "readwrite" },
-	"bluetooth":{},
-    "settings":{ "access": "readwrite" }
+	  "bluetooth":{},
+    "settings":{ "access": "readwrite" },
+    "device-storage:apps":{ "access": "readonly" }
   },
   "developer": {
-    "name": "Deutsche Telekom",
-    "url": "http://www.laboratories.telekom.com"
+    "name": "Julie Zhang",
+    "url": ""
   },
   "icons": {
     "120": "/style/icons/Nfc.png"
@@ -24,17 +25,17 @@
     },
     "nfc-ndef-discovered": {
       "filters": {
-        "type": ["device", "empty", "external-type", "mail",
-                 "smartposter", "smartposter-action",
+        "type": ["device", "empty", "external-type",
                  "text/vcard", "text",
-                 "webcontacts/contact", "webcontacts/email",
-                 "webtelephony/number", "websms/sms",
                  "uri",
                  "*"
                 ]
       }
     },
     "nfc-tag-discovered": {}
-  }
+  },
+  "messages": [{ 
+    "bluetooth-pairing-request": "/pairing.html" 
+  }]
 }
 

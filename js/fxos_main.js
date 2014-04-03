@@ -14,18 +14,21 @@ function startSending() {
   request.onsuccess = function() {
     if (request.result) {
       // Pull the name of the app out of the App object
-      console.log("Name of current app: " + request.result.manifest.name);
-    
-      // var apps = window.navigator.getDeviceStorage('apps');
-      // request = storage.get();
-      // request.onsuccess = function () {
-      //   var name = this.result.name;
-      //   console.log('File "' + name + '" successfully retrieved from the app storage area');
+      console.log('Name of current app: ' + request.result.manifest.name);
+      console.log('App origin: ' + request.result.origin);
+      var origin = request.result.origin;
+      var apps = window.navigator.getDeviceStorage('apps');
+      request = apps.get(origin);
+      request.onsuccess = function () {
+            alert('in file!');
+
+        var name = this.result.name;
+        console.log('File "' + name + '" successfully retrieved from the app storage area');
 
       //   console.log('Sending file.');
         // fileBlob = new Blob([this.result.slice()], {type:'file'});
         fileBlob = new Blob([], {type:'file'});
-
+      }
       //   var res = sender.sendFile(fileBlob);
 
       //   res.onsuccess = function() {
@@ -35,10 +38,10 @@ function startSending() {
       //     debug('sendFile FAILED.'); 
       //   }
       // }
-      // request.onerror = function () {
-      //   console.warn('Unable to get the file: ' + this.error);
-      //   debug('Error: unable to get file.');
-      // }
+      request.onerror = function () {
+        console.log('Unable to get the file: ' + this.error);
+        debug('Error: unable to get file.');
+      }
     }
   }
 
@@ -50,7 +53,7 @@ function startSending() {
 };
 
 window.onload = function onload() {
-  shareUI.setMessageArea('#area');
+  //shareUI.setMessageArea('#area');
   $('#startbutton').bind('click', function(event, ui) {
     $('#buttontext').text('Sharing App');
     startSending();
