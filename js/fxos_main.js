@@ -34,8 +34,8 @@ function startSending() {
           console.log('File "' + name + '" successfully retrieved from the app storage area');
 
           console.log('Sending file.');
-          // fileBlob = new Blob([this.result.slice()], {type:'file'});
-          fileBlob = new Blob([], {type:''});
+          fileBlob = new Blob([file.slice()], {type:''});
+          // fileBlob = new Blob([], {type:''});
       
           // var sending = sender.sendFile(fileBlob);
 
