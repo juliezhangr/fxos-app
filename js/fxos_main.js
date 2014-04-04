@@ -13,38 +13,56 @@ function startSending() {
   
   request.onsuccess = function() {
     if (request.result) {
-      // Pull the name of the app out of the App object
-      console.log('Name of current app: ' + request.result.manifest.name);
-      console.log('App origin: ' + request.result.origin);
-      //var origin = request.result.origin;
-      //var origin = request.result.origin.split('app://')[1];
+      // Pull the origin of the app out of the App object
+      var thisApp = request.result;
+      console.log('Name of current app: ' + thisApp.manifest.name);
+      console.log('App origin: ' + thisApp.origin);
+      
+      var origin = thisApp.origin.split('app://')[1];
+      var manifestOrigin = thisApp.manifestURL.split('app://')[1];
+      
+      // 'apps' storage is the /data/ folder
       var apps = window.navigator.getDeviceStorage('apps');
-      //var filereq = apps.get(origin);
-      var filereq = apps.enumerate();
-      filereq.onsuccess = function () {
-        var file = this.result;
-        alert('in file!');
+      var manifestReq = apps.get('local/webapps/' + manifestOrigin);
+      
+      manifestReq.onsuccess = function () {
+        if (this.result) {
+          var file = this.result;
+          alert('Retrieved manifest!');
 
-        var name = file.name;
-        console.log('File "' + name + '" found in app storage.');
-        this.continue();
-        //console.log('File "' + name + '" successfully retrieved from the app storage area');
+          var name = file.name;
+          console.log('File "' + name + '" successfully retrieved from the app storage area');
 
-        // console.log('Sending file.');
-        // fileBlob = new Blob([this.result.slice()], {type:'file'});
-        // fileBlob = new Blob([], {type:'file'});
-      }
-      //   var res = sender.sendFile(fileBlob);
+          console.log('Sending file.');
+          // fileBlob = new Blob([this.result.slice()], {type:'file'});
+          fileBlob = new Blob([], {type:''});
+      
+          // var sending = sender.sendFile(fileBlob);
 
-      //   res.onsuccess = function() {
+      //   sending.onsuccess = function() {
       //     navigator.mozSettings.createLock().set({'bluetooth.enabled': false});
       //   }
-      //   res.onerror = function() { 
+      //   sending.onerror = function() { 
       //     debug('sendFile FAILED.'); 
       //   }
-      // }
-      filereq.onerror = function () {
-        console.log('Unable to get the file: ' + this.error);
+        }
+      }
+      manifestReq.onerror = function () {
+        console.warn('Unable to get the file: ' + this.error);
+        debug('Error: unable to get file.');
+      }
+
+      var zipReq = apps.get('local/webapps/' + origin + '/application.zip');
+      zipReq.onsuccess = function () {
+        if (this.result) {
+          var file = this.result;
+          var name = file.name;
+          console.log('File "' + name + '" successfully retrieved from the app storage area');
+        }
+      }
+
+      zipReq.onerror = function () {
+        console.warn('Unable to get the file: ' + this.error);
         debug('Error: unable to get file.');
       }
     }
@@ -53,7 +71,7 @@ function startSending() {
   // Couldn't get app data
   request.onerror = function() {
     // Display error name from the DOMError object
-    console.log("Error: " + request.error.name);
+    console.warn("Error: " + request.error.name);
   }
 };
 
@@ -105,7 +123,7 @@ window.onload = function onload() {
       console.log(request.name);
     });
 
-    // Send over bluetooth
+    // Connect to BT peer
     // TODO
   }
   else {
