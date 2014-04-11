@@ -16,6 +16,7 @@ function includeJS(elementContainer) {
     // 'js/nfc_ui.js',
     // 'js/share_ui.js',
     // 'js/nfc_main.js',
+    //'js/pairing.js',
   	'js/fxos_main.js'
   );
   for (var i = 0; i < scripts.length; i++) {

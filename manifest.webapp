@@ -4,10 +4,17 @@
   "launch_path": "/index.html",
   "type": "certified",
   "permissions": {
-    "nfc":{ "access": "readwrite" },
-	  "bluetooth":{},
-    "settings":{ "access": "readwrite" },
-    "device-storage:apps":{ "access": "readonly" }
+    "nfc": {
+      "access": "readwrite"
+    },
+    "bluetooth": {},
+    "settings": {
+      "access": "readwrite"
+    },
+    "device-storage:apps": {
+      "access": "readonly"
+    },
+    "webapps-manage": {}
   },
   "developer": {
     "name": "Julie Zhang",
@@ -25,17 +32,20 @@
     },
     "nfc-ndef-discovered": {
       "filters": {
-        "type": ["device", "empty", "external-type",
-                 "text/vcard", "text",
-                 "uri",
-                 "*"
-                ]
+        "type": [
+          "device",
+          "empty",
+          "external-type",
+          "text/vcard",
+          "text",
+          "uri",
+          "*"
+        ]
       }
     },
     "nfc-tag-discovered": {}
   },
-  "messages": [{ 
-    "bluetooth-pairing-request": "/pairing.html" 
-  }]
+  "messages": [
+    { "bluetooth-opp-recieving-file-confirmation", "/receiving.html" }
+  ]
 }
-

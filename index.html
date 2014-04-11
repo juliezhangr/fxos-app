@@ -26,8 +26,12 @@
             </div>
             <div id="AppShare" data-role="content">
                 <h2>NFC/Bluetooth Sharing</h2>
+                
                 <a data-role="button" data-transition="fade" href="#page1" id="startbutton">
                     <span id="buttontext">Share App File</span>
+                </a>>
+                <a data-role="button" data-transition="fade" href="#page1" id="devicelistbutton">
+                    <span id="devicebuttontext">Show Devices</span>
                 </a>>
                 <ul data-role="listview" data-divider-theme="b" data-inset="true">
                     <li data-role="list-divider" role="heading">
@@ -35,17 +39,6 @@
                     </li>
                     <li data-theme="c" style="height: 100%">
                       <textarea id="area" placeholder="" style="width:100%; padding: 0; height: auto" rows="6" readonly="readonly" disabled="true"></textarea>
-                    </li>
-                </ul>
-                <ul data-role="listview" data-divider-theme="b" data-inset="true" id="taglist" style="display: none;">
-                    <li data-role="list-divider" role="heading">
-                        NdefMessage
-                    </li>
-                </ul>
-                &nbsp;
-                <ul data-role="listview" data-divider-theme="b" data-inset="true" id="actionlist" style="display: none;">
-                    <li data-role="list-divider" role="heading">
-                        Action
                     </li>
                 </ul>
             </div>

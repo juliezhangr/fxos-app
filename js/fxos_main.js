@@ -2,7 +2,6 @@ var dbgcnt = 0;
 function debug(message) {
   dbgcnt++;
   console.log('DEBUG:(' + dbgcnt + ') ' + message);
-  //shareUI.appendTextAndScroll($('#area'), '(' + dbgcnt + ') ' + message + '\n');
 }
 
 var sender;
@@ -35,6 +34,9 @@ function startSending() {
 
           console.log('Sending file.');
           fileBlob = new Blob([file.slice()], {type:''});
+
+          startDiscovery();
+
           // fileBlob = new Blob([], {type:''});
       
           // var sending = sender.sendFile(fileBlob);
@@ -58,6 +60,7 @@ function startSending() {
           var file = this.result;
           var name = file.name;
           console.log('File "' + name + '" successfully retrieved from the app storage area');
+        
         }
       }
 
@@ -75,13 +78,7 @@ function startSending() {
   }
 };
 
-window.onload = function onload() {
-  //shareUI.setMessageArea('#area');
-  $('#startbutton').bind('click', function(event, ui) {
-    $('#buttontext').text('Sharing App');
-    startSending();
-  });
-
+function startDiscovery () {
   if ('mozNfc' in window.navigator) {
     console.log('NFC enabled - sending file via NFC');
     sender = navigator.mozNfc;
@@ -107,27 +104,64 @@ window.onload = function onload() {
   // Device is only bluetooth enabled
   else if ('mozBluetooth' in window.navigator) {
     console.log('NFC disabled - sending file via Bluetooth only');
-    sender = navigator.mozBluetooth;
-    if (!navigator.mozBluetooth.enabled) {
-      if (navigator.mozSettings) {
-        console.log('Enabling bluetooth.');
-        navigator.mozSettings.createLock().set({'bluetooth.enabled': true});
+    var bluetooth = window.navigator.mozBluetooth;
+    var settings = window.navigator.mozSettings;
+    if (!settings || !bluetooth) {
+      console.warn('BT Setup failed.');
+      return;
+    }
+
+    if (!bluetooth.enabled) {
+      console.log('Enabling bluetooth.');
+      settings.createLock().set({'bluetooth.enabled': true});
+    }
+
+    navigator.mozSetMessageHandler('bluetooth-opp-recieving-file-confirmation', function(message) {
+      var request = message.detail;
+      console.log(request);
+      console.log(request.name);
+    })
+
+    var adapter;
+    var btreq = bluetooth.getDefaultAdapter();
+    btreq.onsuccess = function() {
+      adapter = this.result;
+      var pairedreq = adapter.getPairedDevices();
+      pairedreq.onsuccess = function () {
+        var btpeers = this.result;
+        console.log(btpeers);
+        // TODO: figure out how to pull up list of paired peers, hardcoded for now yay
+        var sendreq = adapter.sendFile(btpeers[0].address, fileBlob);
+        sendreq.onsuccess = function() {
+          alert('sucessss!');
+        }
+        sendreq.onerror = function() {
+          console.warn(this.error.name);
+        }
       }
     }
 
-    navigator.mozSetMessageHandler("bluetooth-pairing-request", function (message) {
-      // Get the information about the pairing request
-      var request = message.detail;
-
-      // Log the name of the remote device that wants to be paired with your device
-      console.log(request.name);
-    });
-
-    // Connect to BT peer
-    // TODO
+    btreq.onerror = function() {
+      console.warn(btreq.error.name);
+      console.warn('Getting adapter failed.');
+    }
+    
   }
   else {
     console.warn('Unable to enable NFC or Bluetooth - file send failed.');
     debug('Error: unable to enable NFC or Bluetooth.');
   }  
+};
+
+
+window.onload = function onload() {
+  //shareUI.setMessageArea('#area');
+  $('#startbutton').bind('click', function(event, ui) {
+    $('#buttontext').text('Sharing App');
+    startSending();
+  });
+
+  $('#devicelistbutton').bind('click', function(event, ui) {
+    startDiscovery();
+  });
 };
