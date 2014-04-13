@@ -34,6 +34,7 @@ function startSending() {
 
           console.log('Sending file.');
           fileBlob = new Blob([file.slice()], {type:''});
+          fileBlob.name = file.name;
 
           startDiscovery();
 
@@ -115,12 +116,6 @@ function startDiscovery () {
       console.log('Enabling bluetooth.');
       settings.createLock().set({'bluetooth.enabled': true});
     }
-
-    navigator.mozSetMessageHandler('bluetooth-opp-recieving-file-confirmation', function(message) {
-      var request = message.detail;
-      console.log(request);
-      console.log(request.name);
-    })
 
     var adapter;
     var btreq = bluetooth.getDefaultAdapter();

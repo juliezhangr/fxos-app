@@ -46,6 +46,9 @@
     "nfc-tag-discovered": {}
   },
   "messages": [
-    { "bluetooth-opp-recieving-file-confirmation", "/receiving.html" }
+    { 
+      "bluetooth-opp-recieving-file-confirmation": "/receiving.html",
+      "bluetooth-opp-transfer-start": "/receiving.html"
+    }
   ]
 }
