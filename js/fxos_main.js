@@ -79,15 +79,20 @@ function startSending() {
   }
 };
 
+function NfcActivityHandler(activity) {
+  var activityName = activity.source.name;
+  var data = activity.source.data;
+  console.log('Received NFC activity: ' + activityName);
+  alert('Received activity!');
+}
+
 function startDiscovery () {
+  // Use nfc handover to send file
   if ('mozNfc' in window.navigator) {
     console.log('NFC enabled - sending file via NFC');
     sender = navigator.mozNfc;
-    //navigator.mozSetMessageHandler('activity', NfcActivityHandler);
+    navigator.mozSetMessageHandler('activity', NfcActivityHandler);
 
-    // var data = nfcUI.getActivityData();
-    // nfcUI.p2p = true;
-    
     window.navigator.mozNfc.onpeerready = function(event) {
       debug('In onpeerready handler' + JSON.stringify(event.detail));
       var nfcdom = window.navigator.mozNfc;
@@ -150,13 +155,13 @@ function startDiscovery () {
 
 
 window.onload = function onload() {
-  //shareUI.setMessageArea('#area');
   $('#startbutton').bind('click', function(event, ui) {
     $('#buttontext').text('Sharing App');
     startSending();
   });
 
-  $('#devicelistbutton').bind('click', function(event, ui) {
-    startDiscovery();
-  });
+  // Used for debugging BT/NFC connection
+  // $('#devicelistbutton').bind('click', function(event, ui) {
+  //   startDiscovery();
+  // });
 };
