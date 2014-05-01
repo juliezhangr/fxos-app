@@ -26,13 +26,15 @@
             </div>
             <div id="AppShare" data-role="content">
                 <h2>NFC/Bluetooth Sharing</h2>
-                
+
                 <a data-role="button" data-transition="fade" href="#page1" id="startbutton">
                     <span id="buttontext">Share App File</span>
-                </a>>
-                <a data-role="button" data-transition="fade" href="#page1" id="devicelistbutton">
+                </a>
+                <ul id="bluetooth-paired-devices" class="devices">
+                </ul>
+                <!--<a data-role="button" data-transition="fade" href="#page1" id="devicelistbutton">
                     <span id="devicebuttontext">Show Devices</span>
-                </a>>
+                </a>-->
                 <ul data-role="listview" data-divider-theme="b" data-inset="true">
                     <li data-role="list-divider" role="heading">
                         Status
@@ -43,5 +45,6 @@
                 </ul>
             </div>
         </div>
+
     </body>
 </html>

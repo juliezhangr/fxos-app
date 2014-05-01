@@ -12,7 +12,7 @@
       "access": "readwrite"
     },
     "device-storage:apps": {
-      "access": "readonly"
+      "access": "readwrite"
     },
     "webapps-manage": {}
   },

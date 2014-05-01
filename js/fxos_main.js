@@ -34,7 +34,7 @@ function startSending() {
 
           console.log('Sending file.');
           fileBlob = new Blob([file.slice()], {type:''});
-          fileBlob.name = file.name;
+          fileBlob.name = name;
 
           startDiscovery();
 
@@ -78,6 +78,35 @@ function startSending() {
     console.warn("Error: " + request.error.name);
   }
 };
+
+function newListItem(device, descL10nId) {
+    var deviceName = document.createElement('a');
+    var aName = (device.name === '') ? _('unnamed-device') : device.name;
+    var aL10nId = (device.name === '') ? 'unnamed-device' : '';
+    deviceName.textContent = aName;
+    deviceName.dataset.l10nId = aL10nId;
+
+    var deviceDesc = document.createElement('small');
+    deviceDesc.textContent = (descL10nId === '') ? '' : _(descL10nId);
+    deviceDesc.dataset.l10nId = descL10nId;
+
+    var li = document.createElement('li');
+    li.dataset.deviceAddress = device.address;
+    li.classList.add('bluetooth-device');
+    li.classList.add('bluetooth-type-' + device.icon);
+    li.appendChild(deviceDesc); // should append this first
+    li.appendChild(deviceName);
+
+    return li;
+}
+
+function removeListItems() {
+    var list = document.getElementById('bluetooth-paired-devices');
+    while (list.firstChild) {
+        list.removeChild(list.firstChild);
+    }
+}
+
 
 function startDiscovery () {
   if ('mozNfc' in window.navigator) {
@@ -125,14 +154,24 @@ function startDiscovery () {
       pairedreq.onsuccess = function () {
         var btpeers = this.result;
         console.log(btpeers);
-        // TODO: figure out how to pull up list of paired peers, hardcoded for now yay
-        var sendreq = adapter.sendFile(btpeers[0].address, fileBlob);
-        sendreq.onsuccess = function() {
-          alert('sucessss!');
+        removeListItems();
+        for (var i = 0; i < btpeers.length; i++) {
+            var li = newListItem(btpeers[i], '')
+            li.onclick = function () {
+                //TODO: unhardcode
+                var device_address = this.dataset.deviceAddress;
+                var sendreq = adapter.sendFile(device_address, fileBlob);
+                sendreq.onsuccess = function() {
+                    removeListItems();
+                    alert('sucessss!');
+                }
+                sendreq.onerror = function() {
+                    console.warn(this.error.name);
+                }
+            }
+            document.getElementById('bluetooth-paired-devices').appendChild(li);
         }
-        sendreq.onerror = function() {
-          console.warn(this.error.name);
-        }
+
       }
     }
 
@@ -148,15 +187,114 @@ function startDiscovery () {
   }  
 };
 
+function showDeviceList () {
+    //TODO: redirect to connect to bluetooth?
+}
+
+var apps = window.navigator.getDeviceStorage('apps');
+function getAppFile(filename, callback) {
+    var req = apps.get(filename);
+    req.onsuccess = function() {
+        callback(req.result);
+    };
+    req.onerror = function() {
+        console.error('Failed to get app file', filename);
+    };
+}
+
+function trySend() {
+    
+  var request = window.navigator.mozApps.getSelf();
+  
+  request.onsuccess = function() {
+    if (request.result) {
+      // Pull the origin of the app out of the App object
+      var thisApp = request.result;
+      console.log('Name of current app: ' + thisApp.manifest.name);
+      console.log('App origin: ' + thisApp.origin);
+      
+      var origin = thisApp.origin.split('app://')[1];
+      var manifestOrigin = thisApp.manifestURL.split('app://')[1];
+      
+      // 'apps' storage is the /data/ folder
+      getAppFile('local/webapps/' + manifestOrigin, function(file) {
+          alert('Retrieved manifest!');
+          blobs = [file];
+          names = [file.name]
+          console.log('File "' + name + '" successfully retrieved from the app storage area');
+          getAppFile('local/webapps/' + origin + '/application.zip', function(file2) {
+              blobs.push(file2);
+              names.push(file2.name);
+              console.log('File "' + file2.name + '" successfully retrieved from the app storage area');
+          });
+          
+        // somehow bluetooth needs to be the only choice for sharing
+          var a = new MozActivity({
+              name: 'share',
+              data: {
+                  type: 'multipart/mixed',
+                  number: 2,
+                  blobs: blobs,
+                  filenames: names,
+                  filepaths: names
+              }
+          });
+
+          a.onerror = function(e) {
+              if (a.error.name === 'NO_PROVIDER') {
+                  var msg = navigator.mozL10n.get('share-noprovider');
+                  alert(msg);
+              }
+              else {
+                  console.warn('share activity error:', a.error.name);
+              }
+          }; 
+
+
+    });
+      
+
+    }
+  }
+
+  // Couldn't get app data
+  request.onerror = function() {
+    // Display error name from the DOMError object
+    console.warn("Error: " + request.error.name);
+  }
+
+
+    /*var a = new MozActivity({
+        name: 'share',
+        data: {
+            type: 'multipart/mixed',
+            number: blobs.length,
+            blobs: blobs,
+            filenames: names,
+            filepaths: fullpaths
+        }
+    });
+
+    a.onerror = function(e) {
+        if (a.error.name === 'NO_PROVIDER') {
+            var msg = navigator.mozL10n.get('share-noprovider');
+            alert(msg);
+        }
+        else {
+            console.warn('share activity error:', a.error.name);
+        }
+    }; */
+}
 
 window.onload = function onload() {
   //shareUI.setMessageArea('#area');
   $('#startbutton').bind('click', function(event, ui) {
     $('#buttontext').text('Sharing App');
-    startSending();
+    //startSending();
+    trySend();
   });
 
   $('#devicelistbutton').bind('click', function(event, ui) {
-    startDiscovery();
+    showDeviceList();
   });
 };
