@@ -140,6 +140,41 @@ function getAppFile(filename, callback) {
     };
 }
 
+function BTSendApp(thisApp) {
+    var origin = thisApp.origin.split('app://')[1];
+    var manifestOrigin = thisApp.manifestURL.split('app://')[1];
+
+    getAppFile('local/webapps/' + manifestOrigin, function(file) {
+        var blobs = [file];
+        var names = [file.name]
+        console.log('File "' + name + '" successfully retrieved from the app storage area');
+        getAppFile('local/webapps/' + origin + '/application.zip', function(file2) {
+            blobs.push(file2);
+            names.push(file2.name);
+            console.log('File "' + file2.name + '" successfully retrieved from the app storage area');
+
+            var a = new MozActivity({
+                name: 'share',
+                data: {
+                    number: blobs.length,
+                    blobs: blobs,
+                    filenames: names,
+                    filepaths: names
+                }
+            });
+            a.onsuccess = function() {
+                console.log("share activity success")
+            };
+
+            a.onerror = function(e) {
+                console.warn('share activity error:', a.error.name);
+            };
+    });
+
+    });
+
+}
+
 function BTSend() {
     
   var request = window.navigator.mozApps.getSelf();
@@ -150,45 +185,8 @@ function BTSend() {
       var thisApp = request.result;
       console.log('Name of current app: ' + thisApp.manifest.name);
       console.log('App origin: ' + thisApp.origin);
-      
-      var origin = thisApp.origin.split('app://')[1];
-      var manifestOrigin = thisApp.manifestURL.split('app://')[1];
-      
-      // 'apps' storage is the /data/ folder
-      getAppFile('local/webapps/' + manifestOrigin, function(file) {
-          alert('Retrieved manifest!');
-          blobs = [file];
-          names = [file.name]
-          console.log('File "' + name + '" successfully retrieved from the app storage area');
-          getAppFile('local/webapps/' + origin + '/application.zip', function(file2) {
-              blobs.push(file2);
-              names.push(file2.name);
-              console.log('File "' + file2.name + '" successfully retrieved from the app storage area');
-
-              var a = new MozActivity({
-                  name: 'share',
-                  data: {
-                      number: blobs.length,
-                      blobs: blobs,
-                      filenames: names,
-                      filepaths: names
-                  }
-              });
-              a.onsuccess = function() {
-                  alert("Successs");
-              };
-
-              a.onerror = function(e) {
-                  if (a.error.name === 'NO_PROVIDER') {
-                    console.log(a.error);
-                      alert("No provider");
-                  }
-                  else {
-                      console.warn('share activity error:', a.error.name);
-                  }
-              };
-    });
-
+      console.log(thisApp);
+      BTSendApp(thisApp);
     }
   }
 
