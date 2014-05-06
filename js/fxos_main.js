@@ -37,17 +37,6 @@ function startSending() {
           fileBlob.name = name;
 
           startDiscovery();
-
-          // fileBlob = new Blob([], {type:''});
-      
-          // var sending = sender.sendFile(fileBlob);
-
-      //   sending.onsuccess = function() {
-      //     navigator.mozSettings.createLock().set({'bluetooth.enabled': false});
-      //   }
-      //   sending.onerror = function() { 
-      //     debug('sendFile FAILED.'); 
-      //   }
         }
       }
       manifestReq.onerror = function () {
@@ -78,34 +67,6 @@ function startSending() {
     console.warn("Error: " + request.error.name);
   }
 };
-
-function newListItem(device, descL10nId) {
-    var deviceName = document.createElement('a');
-    var aName = (device.name === '') ? _('unnamed-device') : device.name;
-    var aL10nId = (device.name === '') ? 'unnamed-device' : '';
-    deviceName.textContent = aName;
-    deviceName.dataset.l10nId = aL10nId;
-
-    var deviceDesc = document.createElement('small');
-    deviceDesc.textContent = (descL10nId === '') ? '' : _(descL10nId);
-    deviceDesc.dataset.l10nId = descL10nId;
-
-    var li = document.createElement('li');
-    li.dataset.deviceAddress = device.address;
-    li.classList.add('bluetooth-device');
-    li.classList.add('bluetooth-type-' + device.icon);
-    li.appendChild(deviceDesc); // should append this first
-    li.appendChild(deviceName);
-
-    return li;
-}
-
-function removeListItems() {
-    var list = document.getElementById('bluetooth-paired-devices');
-    while (list.firstChild) {
-        list.removeChild(list.firstChild);
-    }
-}
 
 
 function startDiscovery () {
@@ -166,9 +127,6 @@ function startDiscovery () {
   }  
 };
 
-function showDeviceList () {
-    //TODO: redirect to connect to bluetooth?
-}
 
 var apps = window.navigator.getDeviceStorage('apps');
 
