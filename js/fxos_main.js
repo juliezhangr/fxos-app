@@ -151,28 +151,7 @@ function startDiscovery () {
     btreq.onsuccess = function() {
       adapter = this.result;
       var pairedreq = adapter.getPairedDevices();
-      pairedreq.onsuccess = function () {
-        var btpeers = this.result;
-        console.log(btpeers);
-        removeListItems();
-        for (var i = 0; i < btpeers.length; i++) {
-            var li = newListItem(btpeers[i], '')
-            li.onclick = function () {
-                //TODO: unhardcode
-                var device_address = this.dataset.deviceAddress;
-                var sendreq = adapter.sendFile(device_address, fileBlob);
-                sendreq.onsuccess = function() {
-                    removeListItems();
-                    alert('sucessss!');
-                }
-                sendreq.onerror = function() {
-                    console.warn(this.error.name);
-                }
-            }
-            document.getElementById('bluetooth-paired-devices').appendChild(li);
-        }
-
-      }
+      BTSend();
     }
 
     btreq.onerror = function() {
@@ -192,6 +171,8 @@ function showDeviceList () {
 }
 
 var apps = window.navigator.getDeviceStorage('apps');
+var gallery = window.navigator.getDeviceStorage('pictures');
+
 function getAppFile(filename, callback) {
     var req = apps.get(filename);
     req.onsuccess = function() {
@@ -202,7 +183,7 @@ function getAppFile(filename, callback) {
     };
 }
 
-function trySend() {
+function BTSend() {
     
   var request = window.navigator.mozApps.getSelf();
   
@@ -226,33 +207,69 @@ function trySend() {
               blobs.push(file2);
               names.push(file2.name);
               console.log('File "' + file2.name + '" successfully retrieved from the app storage area');
-          });
-          
-        // somehow bluetooth needs to be the only choice for sharing
-          var a = new MozActivity({
-              name: 'share',
-              data: {
-                  type: 'multipart/mixed',
-                  number: 2,
-                  blobs: blobs,
-                  filenames: names,
-                  filepaths: names
-              }
-          });
+              console.log(gallery)
+              var cursor = gallery.enumerate();
 
-          a.onerror = function(e) {
-              if (a.error.name === 'NO_PROVIDER') {
-                  var msg = navigator.mozL10n.get('share-noprovider');
-                  alert(msg);
-              }
-              else {
-                  console.warn('share activity error:', a.error.name);
-              }
-          }; 
+              cursor.onsuccess = function () {
+                var filepic = this.result;
+                console.log("File found: " + filepic.name);
+                console.log(filepic.type.substring(0, filepic.type.indexOf('/')))
+                console.log(filepic.type)
+                var a = new MozActivity({
+                  name: 'share',
+                  data: {
+                      type: 'image/*',
+                      number: 1,
+                      blobs: [filepic],
+                      filenames: [filepic.name],
+                      filepaths: [filepic.name]
+                  }
+              });
+              a.onsuccess = function() {
+                  alert("Successs");
+              };
 
+              a.onerror = function(e) {
+                  if (a.error.name === 'NO_PROVIDER') {
+                    console.log(a.error);
+                      alert("No provider");
+                  }
+                  else {
+                      console.warn('share activity error:', a.error.name);
+                  }
+              };
+                
+              }
+
+              cursor.onerror = function () {
+                console.warn("No file found: " + this.error);
+              }
+              */
+              /*var a = new MozActivity({
+                  name: 'share',
+                  data: {
+                      type: 'image',
+                      number: 1,
+                      blobs: [file2],
+                      filenames: [file2.name],
+                      filepaths: [file2.name]
+                  }
+              });
+
+              a.onerror = function(e) {
+                  if (a.error.name === 'NO_PROVIDER') {
+                      alert("No provider");
+                      var msg = navigator.mozL10n.get('share-noprovider');
+                      alert(msg);
+                  }
+                  else {
+                      console.warn('share activity error:', a.error.name);
+                  }
+              }; */
+
+          });          
 
     });
-      
 
     }
   }
@@ -263,27 +280,6 @@ function trySend() {
     console.warn("Error: " + request.error.name);
   }
 
-
-    /*var a = new MozActivity({
-        name: 'share',
-        data: {
-            type: 'multipart/mixed',
-            number: blobs.length,
-            blobs: blobs,
-            filenames: names,
-            filepaths: fullpaths
-        }
-    });
-
-    a.onerror = function(e) {
-        if (a.error.name === 'NO_PROVIDER') {
-            var msg = navigator.mozL10n.get('share-noprovider');
-            alert(msg);
-        }
-        else {
-            console.warn('share activity error:', a.error.name);
-        }
-    }; */
 }
 
 window.onload = function onload() {
@@ -291,10 +287,8 @@ window.onload = function onload() {
   $('#startbutton').bind('click', function(event, ui) {
     $('#buttontext').text('Sharing App');
     //startSending();
-    trySend();
+    BTSend();
   });
 
-  $('#devicelistbutton').bind('click', function(event, ui) {
-    showDeviceList();
-  });
+
 };
