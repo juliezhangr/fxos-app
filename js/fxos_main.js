@@ -171,7 +171,6 @@ function showDeviceList () {
 }
 
 var apps = window.navigator.getDeviceStorage('apps');
-var gallery = window.navigator.getDeviceStorage('pictures');
 
 function getAppFile(filename, callback) {
     var req = apps.get(filename);
@@ -207,22 +206,14 @@ function BTSend() {
               blobs.push(file2);
               names.push(file2.name);
               console.log('File "' + file2.name + '" successfully retrieved from the app storage area');
-              console.log(gallery)
-              var cursor = gallery.enumerate();
 
-              cursor.onsuccess = function () {
-                var filepic = this.result;
-                console.log("File found: " + filepic.name);
-                console.log(filepic.type.substring(0, filepic.type.indexOf('/')))
-                console.log(filepic.type)
-                var a = new MozActivity({
+              var a = new MozActivity({
                   name: 'share',
                   data: {
-                      type: 'image/*',
-                      number: 1,
-                      blobs: [filepic],
-                      filenames: [filepic.name],
-                      filepaths: [filepic.name]
+                      number: blobs.length,
+                      blobs: blobs,
+                      filenames: names,
+                      filepaths: names
                   }
               });
               a.onsuccess = function() {
@@ -238,37 +229,6 @@ function BTSend() {
                       console.warn('share activity error:', a.error.name);
                   }
               };
-                
-              }
-
-              cursor.onerror = function () {
-                console.warn("No file found: " + this.error);
-              }
-              */
-              /*var a = new MozActivity({
-                  name: 'share',
-                  data: {
-                      type: 'image',
-                      number: 1,
-                      blobs: [file2],
-                      filenames: [file2.name],
-                      filepaths: [file2.name]
-                  }
-              });
-
-              a.onerror = function(e) {
-                  if (a.error.name === 'NO_PROVIDER') {
-                      alert("No provider");
-                      var msg = navigator.mozL10n.get('share-noprovider');
-                      alert(msg);
-                  }
-                  else {
-                      console.warn('share activity error:', a.error.name);
-                  }
-              }; */
-
-          });          
-
     });
 
     }
