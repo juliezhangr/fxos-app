@@ -35,7 +35,7 @@ function NFCSend() {
               console.log('SEND FILE FAILED');
             });
         };
-    }
+    });
 }
 
 function BTSendApp(thisApp) {
